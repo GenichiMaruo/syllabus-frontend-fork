@@ -118,9 +118,7 @@ const CourseList: React.FC<CourseListProps> = ({
       </Box>
 
       {filteredCourses.length > 0 ? (
-        <Box
-          sx={{ height: "80vh", overflowY: "auto", position: "relative" }}
-        >
+        <Box sx={{ height: "80vh", overflowY: "auto", position: "relative" }}>
           <Grid container spacing={2} columns={columns} sx={{ width: "100%" }}>
             {filteredCourses.map((course, index) => (
               <Grid item key={index} xs={12 / columns}>

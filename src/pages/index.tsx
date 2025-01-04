@@ -232,7 +232,7 @@ const Table: FC<Row> = () => {
         keys.forEach((key) => {
           const subKeys = Object.keys(res[key]);
           subKeys.forEach((subKey) => {
-            if (typeof res[key][subKey] === 'string') {
+            if (typeof res[key][subKey] === "string") {
               res[key][subKey] = res[key][subKey].replace(/\\n/g, "\n");
             }
           });
