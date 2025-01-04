@@ -23,7 +23,20 @@ const CourseList: React.FC<CourseListProps> = ({
   setResultCount,
   setFilters,
 }) => {
-  const [visibleCourses, setVisibleCourses] = useState(20);
+  const [columns, setColumns] = useState(1);
+
+  // Handle window resize to recalculate the number of columns
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const numColumns = Math.floor(width / 250); // Estimate based on card width of 300px
+      setColumns(numColumns > 0 ? numColumns : 1);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Sort courses based on sorting state
   const sortedCourses = [...courses].sort((a, b) => {
@@ -53,18 +66,6 @@ const CourseList: React.FC<CourseListProps> = ({
   useEffect(() => {
     setResultCount(filteredCourses.length);
   }, [filteredCourses.length, setResultCount]);
-
-  // Infinite scroll logic
-  const handleScroll = () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
-      setVisibleCourses((prev) => prev + 10); // Load more courses
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Helper function to check if the column is currently being sorted and in which direction
   const isSorted = (column: string) => {
@@ -117,13 +118,17 @@ const CourseList: React.FC<CourseListProps> = ({
       </Box>
 
       {filteredCourses.length > 0 ? (
-        <Grid container spacing={2}>
-          {filteredCourses.slice(0, visibleCourses).map((course, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <CourseCard course={course} />
-            </Grid>
-          ))}
-        </Grid>
+        <Box
+          sx={{ height: "80vh", overflowY: "auto", position: "relative" }}
+        >
+          <Grid container spacing={2} columns={columns} sx={{ width: "100%" }}>
+            {filteredCourses.map((course, index) => (
+              <Grid item key={index} xs={12 / columns}>
+                <CourseCard course={course} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       ) : (
         <Box textAlign="center" mt={4} mb={4}>
           <Typography variant="h6" color="textSecondary">
@@ -148,7 +153,6 @@ const CourseList: React.FC<CourseListProps> = ({
                 numbering: "",
                 url: "",
               });
-              setVisibleCourses(20); // Reset the visible courses
             }}
             sx={{ mt: 2 }}
           >
